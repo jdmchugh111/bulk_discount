@@ -51,6 +51,11 @@ RSpec.describe "invoices show" do
     @transaction6 = Transaction.create!(credit_card_number: 879799, result: 0, invoice_id: @invoice_6.id)
     @transaction7 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_7.id)
     @transaction8 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_8.id)
+
+    @discount1 = Discount.create(percent_discount: 10, threshold: 4, merchant_id: @merchant1.id)
+    @discount2 = Discount.create(percent_discount: 5, threshold: 6, merchant_id: @merchant1.id)
+    @discount3 = Discount.create(percent_discount: 25, threshold: 9, merchant_id: @merchant1.id)
+    @discount4 = Discount.create(percent_discount: 30, threshold: 10, merchant_id: @merchant2.id)
   end
 
   it "shows the invoice information" do
@@ -82,7 +87,13 @@ RSpec.describe "invoices show" do
   it "shows the total revenue for this invoice" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
-    expect(page).to have_content("%.2f" % (@invoice_1.total_revenue / 100))
+    expect(page).to have_content("Total Revenue: $#{"%.2f" % (@invoice_1.total_revenue / 100)}")
+  end
+
+  it "shows the total discounted revenue for this invoice" do
+    visit merchant_invoice_path(@merchant1, @invoice_1)
+
+    expect(page).to have_content("Total Discounted Revenue: $#{"%.2f" % (@invoice_1.discounted_revenue / 100)}")
   end
 
   it "shows a select field to update the invoice status" do
