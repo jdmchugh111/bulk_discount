@@ -4,7 +4,10 @@ Rails.application.routes.draw do
     resources :items, except: [:destroy]
     resources :item_status, only: [:update]
     resources :invoices, only: [:index, :show, :update]
+    resources :discounts, except: [:update]
   end
+
+  patch "/merchants/:merchant_id/discounts/:id", to: "discounts#update"
 
   namespace :admin do
     resources :dashboard, only: [:index]
