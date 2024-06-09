@@ -30,13 +30,23 @@ RSpec.describe InvoiceItem, type: :model do
       @i3 = Invoice.create!(customer_id: @c2.id, status: 2)
       @i4 = Invoice.create!(customer_id: @c3.id, status: 2)
       @i5 = Invoice.create!(customer_id: @c4.id, status: 2)
-      @ii_1 = InvoiceItem.create!(invoice_id: @i1.id, item_id: @item_1.id, quantity: 1, unit_price: 10, status: 0)
-      @ii_2 = InvoiceItem.create!(invoice_id: @i1.id, item_id: @item_2.id, quantity: 1, unit_price: 8, status: 0)
-      @ii_3 = InvoiceItem.create!(invoice_id: @i2.id, item_id: @item_3.id, quantity: 1, unit_price: 5, status: 2)
+      @ii_1 = InvoiceItem.create!(invoice_id: @i1.id, item_id: @item_1.id, quantity: 6, unit_price: 10, status: 0)
+      @ii_2 = InvoiceItem.create!(invoice_id: @i1.id, item_id: @item_2.id, quantity: 5, unit_price: 8, status: 0)
+      @ii_3 = InvoiceItem.create!(invoice_id: @i2.id, item_id: @item_3.id, quantity: 9, unit_price: 5, status: 2)
       @ii_4 = InvoiceItem.create!(invoice_id: @i3.id, item_id: @item_3.id, quantity: 1, unit_price: 5, status: 1)
+      @discount1 = Discount.create(percent_discount: 10, threshold: 4, merchant_id: @m1.id)
+      @discount2 = Discount.create(percent_discount: 5, threshold: 6, merchant_id: @m1.id)
+      @discount3 = Discount.create(percent_discount: 25, threshold: 9, merchant_id: @m1.id)
     end
     it 'incomplete_invoices' do
       expect(InvoiceItem.incomplete_invoices).to eq([@i1, @i3])
+    end
+
+    it "discount_applied" do
+      expect(@ii_1.discount_applied).to eq(@discount1.id)
+      expect(@ii_2.discount_applied).to eq(@discount1.id)
+      expect(@ii_3.discount_applied).to eq(@discount3.id)
+      expect(@ii_4.discount_applied).to eq(nil)
     end
   end
 end
