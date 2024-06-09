@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "merchant discount new page" do
+describe "merchant discount edit page" do
   before :each do
     @merchant1 = Merchant.create!(name: "Hair Care")
     @merchant2 = Merchant.create!(name: "Jewelry")
@@ -57,32 +57,20 @@ describe "merchant discount new page" do
     @discount4 = Discount.create(percent_discount: 30, threshold: 10, merchant_id: @merchant2.id)
   end
 
-  it "should be able to create a new discount" do
-    visit merchant_discounts_path(@merchant1)
+  it "should be able to edit an existing discount" do
+    visit edit_merchant_discount_path(@merchant1, @discount1)
 
-    click_link "Create New Discount"
+    save_and_open_page
 
-    expect(current_path).to eq(new_merchant_discount_path(@merchant1))
-
-    fill_in :percent_discount, with: "1"
-    fill_in :threshold, with: "1"
+    fill_in "Percentage Discount", with: "1"
+    fill_in "Quantity Threshold", with: "1"
     click_button "Submit"
 
-    expect(current_path).to eq(merchant_discounts_path(@merchant1))
-
-    expect(page).to have_content("Percentage Discount: 1%")
-    expect(page).to have_content("Quantity Threshold: 1")
-  end
-
-  describe "sad path" do
-    it "won't allow you to submit a form with empty fields" do
-      visit new_merchant_discount_path(@merchant1)
-
-      fill_in :percent_discount, with: "5"
-      click_button "Submit"
-
-      expect(current_path).to eq(new_merchant_discount_path(@merchant1))
-      expect(page).to have_content("All fields must be completed")
+    expect(current_path).to eq(merchant_discount_path(@merchant1, @discount1))
+    expect(page).to have_content("Succesfully Updated Discount")
+    within "#discount-#{discount.id}" do
+      expect(page).to have_content("Percentage Discount: 1%")
+      expect(page).to have_content("Quantity Threshold: 1")
     end
   end
 
