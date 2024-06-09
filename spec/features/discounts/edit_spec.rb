@@ -58,9 +58,11 @@ describe "merchant discount edit page" do
   end
 
   it "should be able to edit an existing discount" do
-    visit edit_merchant_discount_path(@merchant1, @discount1)
+    visit merchant_discount_path(@merchant1, @discount1)
 
-    save_and_open_page
+    click_link "Update Discount"
+
+    expect(current_path).to eq(edit_merchant_discount_path(@merchant1, @discount1))
 
     fill_in "Percentage Discount", with: "1"
     fill_in "Quantity Threshold", with: "1"
@@ -68,9 +70,20 @@ describe "merchant discount edit page" do
 
     expect(current_path).to eq(merchant_discount_path(@merchant1, @discount1))
     expect(page).to have_content("Succesfully Updated Discount")
-    within "#discount-#{discount.id}" do
-      expect(page).to have_content("Percentage Discount: 1%")
-      expect(page).to have_content("Quantity Threshold: 1")
+    expect(page).to have_content("Percentage Discount: 1%")
+    expect(page).to have_content("Quantity Threshold: 1")
+  end
+
+  describe "sad path" do
+    it "won't allow you to leave any fields blank" do
+      visit edit_merchant_discount_path(@merchant1, @discount1)
+
+      fill_in "Percentage Discount", with: "1"
+      fill_in "Quantity Threshold", with: ""
+      click_button "Submit"
+
+      expect(current_path).to eq(edit_merchant_discount_path(@merchant1, @discount1))
+      expect(page).to have_content("All fields must be completed")
     end
   end
 
