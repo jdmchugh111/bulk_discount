@@ -1,6 +1,6 @@
 class DiscountsController < ApplicationController
-  before_action :find_merchant, only: [:new, :create, :index, :destroy]
-  before_action :find_discount, only: [:show]
+  before_action :find_merchant
+  before_action :find_discount, only: [:show, :edit, :update]
   
   def index
   end
@@ -9,7 +9,7 @@ class DiscountsController < ApplicationController
   end
 
   def create
-    discount = Discount.new(percent_discount: (params[:percent_discount].to_f / 100),
+    discount = Discount.new(percent_discount: (params[:percent_discount]),
                     threshold: params[:threshold],
                     merchant_id: @merchant.id)
     if discount.save
@@ -29,7 +29,24 @@ class DiscountsController < ApplicationController
   def show
   end
 
+  def edit
+  end
+
+  def update
+    if @discount.update(discount_params)
+      flash.notice = "Succesfully Updated Discount"
+      redirect_to merchant_discount_path(@merchant, @discount)
+    else
+      flash.notice = "All fields must be completed"
+      redirect_to edit_merchant_discount_path(@merchant, @discount)
+    end
+  end
+
   private
+
+  def discount_params
+    params.require(:discount).permit(:percent_discount, :threshold, :merchant_id)
+  end
 
   def find_merchant
     @merchant = Merchant.find(params[:merchant_id])

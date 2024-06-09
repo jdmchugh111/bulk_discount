@@ -51,10 +51,10 @@ describe "merchant discounts index" do
     @transaction7 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_7.id)
     @transaction8 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_8.id)
 
-    @discount1 = Discount.create(percent_discount: 0.10, threshold: 4, merchant_id: @merchant1.id)
-    @discount2 = Discount.create(percent_discount: 0.05, threshold: 6, merchant_id: @merchant1.id)
-    @discount3 = Discount.create(percent_discount: 0.25, threshold: 9, merchant_id: @merchant1.id)
-    @discount4 = Discount.create(percent_discount: 0.30, threshold: 10, merchant_id: @merchant2.id)
+    @discount1 = Discount.create(percent_discount: 10, threshold: 4, merchant_id: @merchant1.id)
+    @discount2 = Discount.create(percent_discount: 5, threshold: 6, merchant_id: @merchant1.id)
+    @discount3 = Discount.create(percent_discount: 25, threshold: 9, merchant_id: @merchant1.id)
+    @discount4 = Discount.create(percent_discount: 30, threshold: 10, merchant_id: @merchant2.id)
   end
 
   it "shows all discounts and their attributes" do
@@ -67,7 +67,7 @@ describe "merchant discounts index" do
 
     @merchant1.discounts.each do |discount|
       within "#discount-#{discount.id}" do
-        expect(page).to have_content("Percentage Discount: #{discount.percent_discount * 100}%")
+        expect(page).to have_content("Percentage Discount: #{discount.percent_discount}%")
         expect(page).to have_content("Quantity Threshold: #{discount.threshold}")
       end
     end
@@ -85,13 +85,13 @@ describe "merchant discounts index" do
 
   it "should be able to delete a discount" do
     visit merchant_discounts_path(@merchant1)
-    expect(page).to have_content("Percentage Discount: #{@discount1.percent_discount * 100}%")
+    expect(page).to have_content("Percentage Discount: #{@discount1.percent_discount}%")
     expect(page).to have_content("Quantity Threshold: #{@discount1.threshold}")
       
     click_button "Delete Discount #{@discount1.id}"
 
-    expect(page).to_not have_content("Discount 1")
-    expect(page).to_not have_content("Percentage Discount: #{@discount1.percent_discount * 100}%")
+    expect(page).to_not have_content("Discount #{@discount1.id}")
+    expect(page).to_not have_content("Percentage Discount: #{@discount1.percent_discount}%")
     expect(page).to_not have_content("Quantity Threshold: #{@discount1.threshold}")
   end
 

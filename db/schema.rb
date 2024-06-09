@@ -26,7 +26,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_09_022708) do
   end
 
   create_table "discounts", force: :cascade do |t|
-    t.float "percent_discount"
+    t.integer "percent_discount"
     t.integer "threshold"
     t.bigint "merchant_id", null: false
     t.datetime "created_at", null: false

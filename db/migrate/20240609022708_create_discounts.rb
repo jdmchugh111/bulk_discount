@@ -1,7 +1,7 @@
 class CreateDiscounts < ActiveRecord::Migration[7.1]
   def change
     create_table :discounts do |t|
-      t.float :percent_discount
+      t.integer :percent_discount
       t.integer :threshold
       t.references :merchant, null: false, foreign_key: true
 

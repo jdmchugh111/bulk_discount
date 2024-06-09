@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "merchant discounts index" do
+describe "merchant discount show page" do
   before :each do
     @merchant1 = Merchant.create!(name: "Hair Care")
     @merchant2 = Merchant.create!(name: "Jewelry")
@@ -51,15 +51,15 @@ describe "merchant discounts index" do
     @transaction7 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_7.id)
     @transaction8 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_8.id)
 
-    @discount1 = Discount.create(percent_discount: 0.10, threshold: 4, merchant_id: @merchant1.id)
-    @discount2 = Discount.create(percent_discount: 0.05, threshold: 6, merchant_id: @merchant1.id)
-    @discount3 = Discount.create(percent_discount: 0.25, threshold: 9, merchant_id: @merchant1.id)
-    @discount4 = Discount.create(percent_discount: 0.30, threshold: 10, merchant_id: @merchant2.id)
+    @discount1 = Discount.create(percent_discount: 10, threshold: 4, merchant_id: @merchant1.id)
+    @discount2 = Discount.create(percent_discount: 5, threshold: 6, merchant_id: @merchant1.id)
+    @discount3 = Discount.create(percent_discount: 25, threshold: 9, merchant_id: @merchant1.id)
+    @discount4 = Discount.create(percent_discount: 30, threshold: 10, merchant_id: @merchant2.id)
   end
 
   it "shows both attributes of the discount" do
     visit merchant_discount_path(@merchant1, @discount1)
-    expect(page).to have_content("Percentage Discount: #{@discount1.percent_discount * 100}%")
+    expect(page).to have_content("Percentage Discount: #{@discount1.percent_discount}%")
     expect(page).to have_content("Quantity Threshold: #{@discount1.threshold}")
     expect(page).to_not have_content("Quantity Threshold: #{@discount2.threshold}")
   end

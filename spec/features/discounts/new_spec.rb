@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "merchant discounts index" do
+describe "merchant discount new page" do
   before :each do
     @merchant1 = Merchant.create!(name: "Hair Care")
     @merchant2 = Merchant.create!(name: "Jewelry")
@@ -51,10 +51,10 @@ describe "merchant discounts index" do
     @transaction7 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_7.id)
     @transaction8 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_8.id)
 
-    @discount1 = Discount.create(percent_discount: 0.10, threshold: 4, merchant_id: @merchant1.id)
-    @discount2 = Discount.create(percent_discount: 0.05, threshold: 6, merchant_id: @merchant1.id)
-    @discount3 = Discount.create(percent_discount: 0.25, threshold: 9, merchant_id: @merchant1.id)
-    @discount4 = Discount.create(percent_discount: 0.30, threshold: 10, merchant_id: @merchant2.id)
+    @discount1 = Discount.create(percent_discount: 10, threshold: 4, merchant_id: @merchant1.id)
+    @discount2 = Discount.create(percent_discount: 5, threshold: 6, merchant_id: @merchant1.id)
+    @discount3 = Discount.create(percent_discount: 25, threshold: 9, merchant_id: @merchant1.id)
+    @discount4 = Discount.create(percent_discount: 30, threshold: 10, merchant_id: @merchant2.id)
   end
 
   it "should be able to create a new discount" do
@@ -70,7 +70,7 @@ describe "merchant discounts index" do
 
     expect(current_path).to eq(merchant_discounts_path(@merchant1))
 
-    expect(page).to have_content("Percentage Discount: 5.0%")
+    expect(page).to have_content("Percentage Discount: 5%")
     expect(page).to have_content("Quantity Threshold: 5")
   end
 
