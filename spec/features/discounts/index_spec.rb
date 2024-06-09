@@ -83,4 +83,17 @@ describe "merchant discounts index" do
     expect(current_path).to eq(merchant_discount_path(@merchant1, @discount3))
   end
 
+  it "should be able to delete a discount" do
+    visit merchant_discounts_path(@merchant1)
+    expect(page).to have_content("Percentage Discount: #{@discount1.percent_discount * 100}%")
+    expect(page).to have_content("Quantity Threshold: #{@discount1.threshold}")
+      
+    click_button "Delete Discount #{@discount1.id}"
+
+    expect(page).to_not have_content("Discount 1")
+    expect(page).to_not have_content("Percentage Discount: #{@discount1.percent_discount * 100}%")
+    expect(page).to_not have_content("Quantity Threshold: #{@discount1.threshold}")
+  end
+
+
 end

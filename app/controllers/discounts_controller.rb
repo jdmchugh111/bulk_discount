@@ -1,19 +1,14 @@
 class DiscountsController < ApplicationController
-  # before_action :find_merchant, only: [:new, :create, :index]
+  before_action :find_merchant, only: [:new, :create, :index, :destroy]
+  before_action :find_discount, only: [:show]
+  
   def index
-    @merchant = Merchant.find(params[:merchant_id])
-  end
-
-  def show
-    @discount = Discount.find(params[:id])
   end
 
   def new
-    @merchant = Merchant.find(params[:merchant_id])
   end
 
   def create
-    @merchant = Merchant.find(params[:merchant_id])
     discount = Discount.new(percent_discount: (params[:percent_discount].to_f / 100),
                     threshold: params[:threshold],
                     merchant_id: @merchant.id)
@@ -24,6 +19,23 @@ class DiscountsController < ApplicationController
       flash.notice = "All fields must be completed"
       redirect_to new_merchant_discount_path(@merchant)
     end
-    
+  end
+
+  def destroy
+    Discount.find(params[:id]).destroy
+    redirect_to merchant_discounts_path(@merchant)
+  end
+
+  def show
+  end
+
+  private
+
+  def find_merchant
+    @merchant = Merchant.find(params[:merchant_id])
+  end
+
+  def find_discount
+    @discount = Discount.find(params[:id])
   end
 end

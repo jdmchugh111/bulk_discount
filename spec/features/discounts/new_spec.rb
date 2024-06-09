@@ -86,5 +86,4 @@ describe "merchant discounts index" do
     end
   end
 
-
 end

@@ -6,6 +6,7 @@
     <h4> <%= link_to "Discount #{discount.id}", merchant_discount_path(@merchant, discount) %></h4>
     <p>Percentage Discount: <%= (discount.percent_discount * 100).round(1) %>%</p>
     <p>Quantity Threshold: <%= discount.threshold %></p>
+    <%= button_to "Delete Discount #{discount.id}", merchant_discount_path(@merchant, discount), method: :delete %>
   </div>
 <% end %>
 
