@@ -17,6 +17,10 @@ describe "Admin Invoices Show Page" do
     @ii_2 = InvoiceItem.create!(invoice_id: @i1.id, item_id: @item_2.id, quantity: 6, unit_price: 1, status: 1)
     @ii_3 = InvoiceItem.create!(invoice_id: @i2.id, item_id: @item_2.id, quantity: 87, unit_price: 12, status: 2)
 
+    @discount1 = Discount.create(percent_discount: 10, threshold: 12, merchant_id: @m1)
+    @discount2 = Discount.create(percent_discount: 5, threshold: 6, merchant_id: @m1)
+    @discount3 = Discount.create(percent_discount: 25, threshold: 20, merchant_id: @m1)
+
     visit admin_invoice_path(@i1)
   end
 
@@ -54,9 +58,13 @@ describe "Admin Invoices Show Page" do
   end
 
   it "should display the total revenue the invoice will generate" do
-    expect(page).to have_content("Total Revenue: $#{(@i1.total_revenue) / 100}0")
+    expect(page).to have_content("Total Revenue: $#{"%.2f" % (@i1.total_revenue / 100)}")
 
-    expect(page).to_not have_content("%.2f" % (@i2.total_revenue / 100))
+    expect(page).to_not have_content("Total Revenue: $#{"%.2f" % (@i2.total_revenue / 100)}")
+  end
+
+  it "should display the total discounted revenue the invoice will generate" do
+    expect(page).to have_content("Total Discounted Revenue: $#{"%.2f" % (@i1.discounted_revenue / 100)}")
   end
 
   it "should have status as a select field that updates the invoices status" do

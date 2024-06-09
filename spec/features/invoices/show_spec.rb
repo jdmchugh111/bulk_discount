@@ -112,7 +112,7 @@ RSpec.describe "invoices show" do
     end
   end
 
-  it "has a link to the discount applied (if any)" do
+  it "has a link to the discount applied" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
     within("#the-status-#{@ii_1.id}") do
       expect(page).to have_link("See Discount")
@@ -126,7 +126,9 @@ RSpec.describe "invoices show" do
       click_link "See Discount"
       expect(current_path).to eq(merchant_discount_path(@merchant1, @discount1))
     end
+  end
 
+  it "should not display a link if no discount was applied" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
     within("#the-status-#{@ii_12.id}") do
       expect(page).to_not have_link("See Discount")
