@@ -1,2 +1,4 @@
+<%= render partial: "shared/nav" %>
+
 <h2>Create New Discount</h2>
 <%= render partial: 'form', locals: { method: :post, url: merchant_discounts_path(@merchant), class: 'merchant_discount_form', local: true, model: nil } %>
