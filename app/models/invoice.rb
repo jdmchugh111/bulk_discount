@@ -28,9 +28,9 @@ class Invoice < ApplicationRecord
       .joins(item: { merchant: :discounts })
       .where("invoice_items.quantity >= discounts.threshold")
       .group("invoice_items.id")
-      .pluck("invoice_items.id, max(discounts.percent_discount) as best_discount, 
+      .pluck("max(discounts.percent_discount) as best_discount, 
               invoice_items.unit_price, invoice_items.quantity")
-      .sum do |item_id, best_discount, unit_price, quantity|
+      .sum do |best_discount, unit_price, quantity|
         (best_discount / 100.0) * unit_price * quantity
       end
   end
