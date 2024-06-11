@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "invoices show" do
+describe "merchant discount edit page" do
   before :each do
     @merchant1 = Merchant.create!(name: "Hair Care")
     @merchant2 = Merchant.create!(name: "Jewelry")
@@ -30,10 +30,10 @@ RSpec.describe "invoices show" do
     @invoice_6 = Invoice.create!(customer_id: @customer_5.id, status: 2)
     @invoice_7 = Invoice.create!(customer_id: @customer_6.id, status: 2)
 
-    @invoice_8 = Invoice.create!(customer_id: @customer_6.id, status: 1)
+    @invoice_8 = Invoice.create!(customer_id: @customer_6.id, status: 2)
 
-    @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 10, status: 2)
-    @ii_2 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_1.id, quantity: 1, unit_price: 10, status: 2)
+    @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 10, status: 0)
+    @ii_2 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_1.id, quantity: 1, unit_price: 10, status: 0)
     @ii_3 = InvoiceItem.create!(invoice_id: @invoice_3.id, item_id: @item_2.id, quantity: 2, unit_price: 8, status: 2)
     @ii_4 = InvoiceItem.create!(invoice_id: @invoice_4.id, item_id: @item_3.id, quantity: 3, unit_price: 5, status: 1)
     @ii_6 = InvoiceItem.create!(invoice_id: @invoice_5.id, item_id: @item_4.id, quantity: 1, unit_price: 1, status: 1)
@@ -41,8 +41,6 @@ RSpec.describe "invoices show" do
     @ii_8 = InvoiceItem.create!(invoice_id: @invoice_7.id, item_id: @item_8.id, quantity: 1, unit_price: 5, status: 1)
     @ii_9 = InvoiceItem.create!(invoice_id: @invoice_7.id, item_id: @item_4.id, quantity: 1, unit_price: 1, status: 1)
     @ii_10 = InvoiceItem.create!(invoice_id: @invoice_8.id, item_id: @item_5.id, quantity: 1, unit_price: 1, status: 1)
-    @ii_11 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_8.id, quantity: 6, unit_price: 6, status: 2)
-    @ii_12 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_2.id, quantity: 2, unit_price: 8, status: 2)
 
     @transaction1 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_1.id)
     @transaction2 = Transaction.create!(credit_card_number: 230948, result: 1, invoice_id: @invoice_2.id)
@@ -59,79 +57,34 @@ RSpec.describe "invoices show" do
     @discount4 = Discount.create(percent_discount: 30, threshold: 10, merchant_id: @merchant2.id)
   end
 
-  it "shows the invoice information" do
-    visit merchant_invoice_path(@merchant1, @invoice_1)
+  it "should be able to edit an existing discount" do
+    visit merchant_discount_path(@merchant1, @discount1)
 
-    expect(page).to have_content(@invoice_1.id)
-    expect(page).to have_content(@invoice_1.status)
-    expect(page).to have_content(@invoice_1.created_at.strftime("%A, %B %-d, %Y"))
+    click_link "Update Discount"
+
+    expect(current_path).to eq(edit_merchant_discount_path(@merchant1, @discount1))
+
+    fill_in "Percentage Discount", with: "1"
+    fill_in "Quantity Threshold", with: "1"
+    click_button "Submit"
+
+    expect(current_path).to eq(merchant_discount_path(@merchant1, @discount1))
+    expect(page).to have_content("Succesfully Updated Discount")
+    expect(page).to have_content("Percentage Discount: 1%")
+    expect(page).to have_content("Quantity Threshold: 1")
   end
 
-  it "shows the customer information" do
-    visit merchant_invoice_path(@merchant1, @invoice_1)
+  describe "sad path" do
+    it "won't allow you to leave any fields blank" do
+      visit edit_merchant_discount_path(@merchant1, @discount1)
 
-    expect(page).to have_content(@customer_1.first_name)
-    expect(page).to have_content(@customer_1.last_name)
-    expect(page).to_not have_content(@customer_2.last_name)
-  end
+      fill_in "Percentage Discount", with: "1"
+      fill_in "Quantity Threshold", with: ""
+      click_button "Submit"
 
-  it "shows the item information" do
-    visit merchant_invoice_path(@merchant1, @invoice_1)
-
-    expect(page).to have_content(@item_1.name)
-    expect(page).to have_content(@ii_1.quantity)
-    expect(page).to have_content("%.2f" % (@ii_1.unit_price / 100))
-    expect(page).to_not have_content(@ii_4.unit_price)
-
-  end
-
-  it "shows the total revenue for this invoice" do
-    visit merchant_invoice_path(@merchant1, @invoice_1)
-
-    expect(page).to have_content("Total Revenue: $#{"%.2f" % (@invoice_1.total_revenue / 100)}")
-  end
-
-  it "shows the total discounted revenue for this invoice" do
-    visit merchant_invoice_path(@merchant1, @invoice_1)
-
-    expect(page).to have_content("Total Discounted Revenue: $#{"%.2f" % (@invoice_1.discounted_revenue / 100)}")
-  end
-
-  it "shows a select field to update the invoice status" do
-    visit merchant_invoice_path(@merchant1, @invoice_1)
-
-    within("#the-status-#{@ii_1.id}") do
-      page.select("cancelled")
-      click_button "Update Invoice"
-
-      expect(page).to have_content("cancelled")
-    end
-
-    within("#current-invoice-status") do
-      expect(page).to_not have_content("in progress")
+      expect(current_path).to eq(edit_merchant_discount_path(@merchant1, @discount1))
+      expect(page).to have_content("All fields must be completed")
     end
   end
 
-  it "has a link to the discount applied" do
-    visit merchant_invoice_path(@merchant1, @invoice_1)
-    within("#the-status-#{@ii_1.id}") do
-      expect(page).to have_link("See Discount")
-      click_link "See Discount"
-      expect(current_path).to eq(merchant_discount_path(@merchant1, @discount3))
-    end
-
-    visit merchant_invoice_path(@merchant1, @invoice_1)
-    within("#the-status-#{@ii_11.id}") do
-      expect(page).to have_link("See Discount")
-      click_link "See Discount"
-      expect(current_path).to eq(merchant_discount_path(@merchant1, @discount1))
-    end
-  end
-
-  it "should not display a link if no discount was applied" do
-    visit merchant_invoice_path(@merchant1, @invoice_1)
-    within("#the-status-#{@ii_12.id}") do
-      expect(page).to_not have_link("See Discount")
-    end
-  end
 end

@@ -12,6 +12,7 @@
 
   <p> Created on: <%= @invoice.created_at.strftime("%A, %B %-d, %Y") %></p>
   <p>Total Revenue: $<%= "%.2f" % (@invoice.total_revenue / 100) %></p>
+  <p>Total Discounted Revenue: $<%= "%.2f" % (@invoice.discounted_revenue / 100) %>
 
 
   <h4>Customer:</h4>
@@ -25,6 +26,7 @@
         <th class="th1">Item Name</th>
         <th class="th1">Quantity</th>
         <th class="th1">Unit Price</th>
+        <th class="th1">Discount Applied</th>
         <th class="th1">Status</th>
       </tr>
     </thead>
@@ -36,6 +38,9 @@
             <td style="text-align:center"><%= i.item.name %></td>
             <td style="text-align:center"><%= i.quantity %></td>
             <td style="text-align:center">$<%= "%.2f" % (i.unit_price / 100) %></td>
+            <td style="text-align:center"><% if i.discount_applied != nil %>
+                                          <%= link_to "See Discount", merchant_discount_path(@merchant, i.discount_applied) %>
+                                          <% end %></td>
             <td style="text-align:center">
               <%= form_with model: @invoice, url: merchant_invoice_path(@merchant, @invoice), method: :patch, local: true do |f| %>
                 <%= f.select :status, Invoice.statuses.keys, selected: "#{@invoice.status}" %>
